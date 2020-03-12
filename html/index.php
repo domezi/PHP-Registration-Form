@@ -15,6 +15,7 @@ $userRow = mysqli_fetch_array($res, MYSQLI_ASSOC);
 <!DOCTYPE html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hello,<?php echo $userRow['email']; ?></title>
     <link rel="stylesheet" href="assets/css/bootstrap.min.css" type="text/css"/>
     <link rel="stylesheet" href="assets/css/index.css" type="text/css"/>
