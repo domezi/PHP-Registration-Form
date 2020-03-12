@@ -32,13 +32,11 @@ $userRow = mysqli_fetch_array($res, MYSQLI_ASSOC);
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Website Name</a>
+            <a class="navbar-brand" href="#">Termin-ator</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">First Link</a></li>
-                <li><a href="#">Second Link</a></li>
-                <li><a href="#">Third Link</a></li>
+                <li><a href="?site=termine">Meine Termine</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
 
@@ -63,30 +61,7 @@ $userRow = mysqli_fetch_array($res, MYSQLI_ASSOC);
 
 
 <div class="container">
-    <!-- Jumbotron-->
-    <div class="jumbotron">
-        <h1>Hello, <?php echo $userRow['username']; ?></h1>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque at auctor est, in convallis eros. Nulla
-            facilisi. Donec ipsum nulla, hendrerit nec mauris vitae, lobortis egestas tortor. </p>
-        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a></p>
-    </div>
-
-    <div class="row">
-        <div class="col-lg-12">
-            <h2>Example body text</h2>
-            <p>Nullam quis risus eget <a href="#">urna mollis ornare</a> vel eu leo. Cum sociis natoque penatibus et
-                magnis dis parturient montes, nascetur ridiculus mus. Nullam id dolor id nibh ultricies vehicula.</p>
-            <p>
-                <small>This line of text is meant to be treated as fine print.</small>
-            </p>
-            <p>The following snippet of text is <strong>rendered as bold text</strong>.</p>
-            <p>The following snippet of text is <em>rendered as italicized text</em>.</p>
-            <p>An abbreviation of the word attribute is <abbr title="attribute">attr</abbr>.</p>
-
-        </div>
-
-
-    </div>
+    <?php include("app.php");?>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
