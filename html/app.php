@@ -1,6 +1,79 @@
 <?php
-if($_GET["site"] === "termine") {
+if($_GET["site"] === "event_invite") {
     echo "<h1>Meine Termine</h1>";
+    echo "<a href=?site=termine>Meine Termine</a> > Personen einladen<hr>";
+    $res = $conn->query("select * from events where id = '".intval($_GET["id"])."'");
+    if($res->num_rows) {
+        $event=$res->fetch_object();
+        echo "Personen einladen für <b>".$event->title.", beginnt ".date("d.m.Y H:i",strtotime($event->start))." Uhr</b>";
+        echo "<hr>";
+        if(isset($_GET["invite_uid"])) {
+            echo $conn->query("INSERT INTO `event_has_user` (`event_id`, `uid`, `confirmed`, `iat`)
+VALUES ('10', '2', '', '0000-00-00 00:00:00');") ? "<div class='alert alert-success'>Einladung versendet.</div>": "<div class='alert alert-danger'>Einladung fehlgeschlagen.</div>";
+        }
+        $users = $conn->query("select * from users where id != '".$userRow["id"]."'");
+        if($users->num_rows) {
+            echo "<table class='table table-striped table-bordered'>";
+            while($user = $users->fetch_object()) {
+                echo "<tr><td>".$user->username."</td>";
+                $event_has_user = $conn->query("select * from event_has_user where event_id = '".$event->id."' and uid = '".$user->id."'");
+                if($event_has_user->num_rows === 0) {
+                    echo "<td><a href=?site=event_invite&id=".$event->id."&invite_uid=".$user->id." class='btn btn-success' ><span class='glyphicon glyphicon-plus'></span> Einladung versenden</a></td>";
+                } else {
+                    $confirmed = $event_has_user->fetch_object()->confirmed;
+                    if($confirmed=="0")
+                        echo "<td><a href=?site=event_invite&id=".$event->id." class='btn btn-default disabled' ><span class='glyphicon glyphicon-time'></span> Warte auf Bestätigung</a></td>";
+                    else if($confirmed=="1")
+                        echo "<td><a href=?site=event_invite&id=".$event->id." class='btn btn-default disabled' ><span class='glyphicon glyphicon-check'></span> Bestätigt</a></td>";
+                    else if($confirmed=="2")
+                        echo "<td><a href=?site=event_invite&id=".$event->id." class='btn btn-default disabled' ><span class='glyphicon glyphicon-remove'></span> Abgelehnt</a></td>";
+                }
+                echo "</tr>";
+            }
+            echo "</table>";
+        }
+        else echo "Keine User gefunden.";
+        echo "<hr><a href=?site=termine class='btn btn-default'><span class='glyphicon glyphicon-chevron-left'></span> Meine Termine</a>";
+    } else {
+        echo "Termin wurde nicht gefunden.";
+    }
+
+} else if($_GET["site"] === "invitations") {
+    echo "<h1>Einladungen</h1>";
+    echo "Termine, zu denen ich eingeladen bin.<hr>";
+
+    if(isset($_GET["id"])) {
+        $sql="update `event_has_user` set confirmed = '".intval($_GET["confirm"])."' where event_id = '".intval($_GET["id"])."' and uid = '".$userRow["id"]."'";
+        echo $conn->query($sql) ? "<div class='alert alert-success'>Bestätigung versendet.</div>": "<div class='alert alert-danger'>Bestätigung fehlgeschlagen.</div>";
+    }
+
+    $ins=$conn->query("select e.*,ehu.confirmed,u.username from event_has_user ehu,users u, events e where e.id = ehu.event_id and ehu.uid = '".$userRow["id"]."' and u.id = e.uid order by ehu.confirmed desc");
+    if($ins->num_rows) {
+        echo "<table class='table table-striped table-bordered'>";
+        while($event = $ins->fetch_object()) {
+            echo "<tr>";
+            echo "<td>".$event->username."</td>";
+            echo "<td>".$event->title."</td>";
+            echo "<td>".date("d.m.Y H:i",strtotime($event->start))."</td>";
+            if(!$event->confirmed)
+                echo "<td><a href=?site=invitations&id=".$event->id."&confirm=1 class='btn btn-success' ><span class='glyphicon glyphicon-plus'></span> Bestätigen</a>
+                <a href=?site=invitations&id=".$event->id."&confirm=2 class='btn btn-danger' ><span class='glyphicon glyphicon-remove'></span> Ablehnen</a></td>";
+            else {
+                if($event->confirmed == "1")
+                    echo "<td><a href=?site=invitations&id=".$event->event_id." class='btn btn-default disabled' ><span class='glyphicon glyphicon-check'></span> Bestätigt</a></td>";
+                else
+                    echo "<td><a href=?site=invitations&id=".$event->event_id." class='btn btn-default disabled' ><span class='glyphicon glyphicon-remove'></span> Abgelehnt</a></td>";
+            }
+
+            echo "</tr>";
+        }
+        echo "</table>";
+    }
+    else echo "Keine Einladungen.";
+
+} else if($_GET["site"] === "termine") {
+    echo "<h1>Alle Termine</h1>";
+    echo "Meine Termine<hr>";
 
     // add event
     if(isset($_POST["title"])) {
@@ -39,7 +112,8 @@ if($_GET["site"] === "termine") {
             echo "<td>".date("d.m.Y H:i",strtotime($event->start))."</td>";
             echo "<td>".date("d.m.Y H:i",strtotime($event->end))."</td>";
             echo "<td>~".round((strtotime($event->end)-strtotime($event->start))/3600)."h</td>";
-            echo "<td><a href=?site=termine&action=delete&id=".$event->id." class='btn btn-danger' ><span class='glyphicon glyphicon-trash'></span></a></td></tr>";
+            echo "<td><a href=?site=event_invite&id=".$event->id." class='btn btn-success' ><span class='glyphicon glyphicon-user'></span></a>";
+            echo " <a href=?site=termine&action=delete&id=".$event->id." class='btn btn-danger' ><span class='glyphicon glyphicon-trash'></span></a></td></tr>";
         }
         echo "</table>";
     } else {
