@@ -39,6 +39,7 @@ $userRow = mysqli_fetch_array($res, MYSQLI_ASSOC);
             <ul class="nav navbar-nav">
                 <li><a href="?site=termine">Meine Termine</a></li>
                 <li><a href="?site=invitations">Einladungen<?php echo "(".$conn->query("select * from event_has_user where uid = '".$userRow["id"]."' and confirmed = 0")->num_rows.")"; ?></a></li>
+                <li><a href="?site=cal">Kalender</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
 

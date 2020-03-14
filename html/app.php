@@ -8,8 +8,10 @@ if($_GET["site"] === "event_invite") {
         echo "Personen einladen für <b>".$event->title.", beginnt ".date("d.m.Y H:i",strtotime($event->start))." Uhr</b>";
         echo "<hr>";
         if(isset($_GET["invite_uid"])) {
-            echo $conn->query("INSERT INTO `event_has_user` (`event_id`, `uid`, `confirmed`, `iat`)
-VALUES ('10', '2', '', '0000-00-00 00:00:00');") ? "<div class='alert alert-success'>Einladung versendet.</div>": "<div class='alert alert-danger'>Einladung fehlgeschlagen.</div>";
+            $res = $conn->query("select * from event_has_user where uid = '".intval($_GET["invite_uid"])."' and event_id = '".intval($_GET["id"])."'");
+            echo $res->num_rows == 0 && $conn->query("INSERT INTO `event_has_user` (`event_id`, `uid`, `confirmed`)
+VALUES ('".intval($_GET["id"])."', '".intval($_GET["invite_uid"])."', '0' );") ? "<div class='alert alert-success'>Einladung versendet.</div>": "<div class='alert alert-danger'>Einladung fehlgeschlagen.</div>";
+echo $conn->error;
         }
         $users = $conn->query("select * from users where id != '".$userRow["id"]."'");
         if($users->num_rows) {
@@ -38,6 +40,77 @@ VALUES ('10', '2', '', '0000-00-00 00:00:00');") ? "<div class='alert alert-succ
         echo "Termin wurde nicht gefunden.";
     }
 
+} else if($_GET["site"] === "cal") {
+    echo "<h1>Kalender</h1>";
+    echo "Meine Termine und Einladungen.<hr>";
+    ?>
+
+<link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet' />
+
+
+  
+
+  <link href='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.css' rel='stylesheet' />
+
+  <link href='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.min.css' rel='stylesheet' />
+
+
+<script src='/assets/demo-to-codepen.js'></script>
+
+<script src='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.js'></script>
+
+
+
+
+  <script src='https://unpkg.com/@fullcalendar/interaction@4.4.0/main.min.js'></script>
+
+  <script src='https://unpkg.com/@fullcalendar/daygrid@4.4.0/main.min.js'></script>
+
+  <script src='https://unpkg.com/@fullcalendar/timegrid@4.4.0/main.min.js'></script>
+
+
+
+  
+<script>
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      plugins: [ 'interaction', 'dayGrid', 'timeGrid' ],
+      defaultView: 'dayGridMonth',
+      defaultDate: '2020-02-07',
+      header: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      events: [
+    <?php
+    $events = $conn->query("select * from events where uid = '".$userRow["id"]."'");
+    if($events->num_rows) {
+        while($event = $events->fetch_object()) {
+            echo "{title:'".str_replace("'","",$event->title)."',end:'".$event->end."',start:'".$event->start."',borderColor:'gray',backgroundColor:'gray'},";
+        }
+    }
+    $events = $conn->query("select e.* from events e, event_has_user ehu where e.id = ehu.event_id and ehu.uid = '".$userRow["id"]."'");
+    if($events->num_rows) {
+        while($event = $events->fetch_object()) {
+            echo "{title:'".str_replace("'","",$event->title)."',end:'".$event->end."',start:'".$event->start."',borderColor:'orangered',backgroundColor:'orangered'},";
+        }
+    }
+    ?>
+      ]
+    });
+
+    calendar.render();
+  });
+
+</script>
+
+  <div id='calendar'></div>
+
+    <?php
 } else if($_GET["site"] === "invitations") {
     echo "<h1>Einladungen</h1>";
     echo "Termine, zu denen ich eingeladen bin.<hr>";
