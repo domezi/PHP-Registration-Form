@@ -42,7 +42,7 @@ echo $conn->error;
 
 } else if($_GET["site"] === "cal") {
     echo "<h1>Kalender</h1>";
-    echo "Meine Termine und Einladungen.<hr>";
+    echo "Alle Termine. Meine Termine und Einladungen in einer Ansicht.<hr>";
     ?>
 
 <link href='https://unpkg.com/@fullcalendar/core@4.4.0/main.min.css' rel='stylesheet' />
@@ -145,8 +145,7 @@ echo $conn->error;
     else echo "Keine Einladungen.";
 
 } else if($_GET["site"] === "termine") {
-    echo "<h1>Alle Termine</h1>";
-    echo "Meine Termine<hr>";
+    echo "<h1>Meine Termine</h1><hr>";
 
     // add event
     if(isset($_POST["title"])) {
