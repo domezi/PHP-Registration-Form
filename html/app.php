@@ -93,7 +93,7 @@ echo $conn->error;
             echo "{title:'".str_replace("'","",$event->title)."',end:'".$event->end."',start:'".$event->start."',borderColor:'gray',backgroundColor:'gray'},";
         }
     }
-    $events = $conn->query("select e.* from events e, event_has_user ehu where e.id = ehu.event_id and ehu.uid = '".$userRow["id"]."'");
+    $events = $conn->query("select e.* from events e, event_has_user ehu where e.id = ehu.event_id and ehu.uid = '".$userRow["id"]."' and ehu.confirmed = '1'");
     if($events->num_rows) {
         while($event = $events->fetch_object()) {
             echo "{title:'".str_replace("'","",$event->title)."',end:'".$event->end."',start:'".$event->start."',borderColor:'orangered',backgroundColor:'orangered'},";
