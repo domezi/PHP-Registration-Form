@@ -7,6 +7,11 @@ if (!isset($_SESSION['user'])) {
     header("Location: login.php");
     exit;
 }
+
+if(!isset($_GET["site"])) {
+    $_GET["site"]="termine";
+}
+
 // select logged in users detail
 $res = $conn->query("SELECT * FROM users WHERE id=" . $_SESSION['user']);
 $userRow = mysqli_fetch_array($res, MYSQLI_ASSOC);
