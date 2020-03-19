@@ -192,4 +192,8 @@ echo $conn->error;
         echo "Keine Termine gefunden.";
     }
     
+} else {
+    echo "<h1>Huch!</h1>";
+    echo "<p>Diese Seite wurde nicht gefunden.</p>";
+    echo "<a href=?site=termine class='btn btn-primary'>Zu meinen Terminen</A>";
 }
